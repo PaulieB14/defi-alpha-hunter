@@ -9,220 +9,518 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
             color: #ffffff;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(78, 205, 196, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
         
         .header {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 20px;
+            backdrop-filter: blur(20px);
+            padding: 30px;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 10;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #feca57);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 40px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
         }
         
         .stat-card {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px) scale(1.02);
+            border-color: #4ecdc4;
+            box-shadow: 0 20px 40px rgba(78, 205, 196, 0.3);
         }
         
         .stat-number {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover .stat-number {
+            transform: scale(1.1);
         }
         
         .stat-label {
             font-size: 1.1em;
             opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .opportunities {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 30px 30px;
+            padding: 0 40px 40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .opportunity-card {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.6s ease forwards;
+        }
+        
+        .opportunity-card:nth-child(2) { animation-delay: 0.1s; }
+        .opportunity-card:nth-child(3) { animation-delay: 0.2s; }
+        .opportunity-card:nth-child(4) { animation-delay: 0.3s; }
+        .opportunity-card:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .opportunity-card:hover {
-            transform: translateX(10px);
+            transform: translateX(15px) scale(1.02);
             border-color: #4ecdc4;
+            box-shadow: 0 25px 50px rgba(78, 205, 196, 0.2);
         }
         
         .opp-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .opp-type {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .type-emoji {
+            font-size: 1.5em;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
         
         .opp-chain {
-            background: rgba(78, 205, 196, 0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
+            background: linear-gradient(45deg, rgba(78, 205, 196, 0.3), rgba(69, 183, 209, 0.3));
+            padding: 8px 20px;
+            border-radius: 25px;
             font-size: 0.9em;
+            font-weight: bold;
+            border: 1px solid rgba(78, 205, 196, 0.5);
         }
         
         .confidence-bar {
             width: 100%;
-            height: 8px;
+            height: 12px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            margin: 10px 0;
+            border-radius: 6px;
+            margin: 15px 0;
             overflow: hidden;
+            position: relative;
         }
         
         .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
-            border-radius: 4px;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #4ecdc4);
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         .opp-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
         
         .detail-item {
             background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
         
         .detail-label {
             font-size: 0.9em;
             opacity: 0.7;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .detail-value {
             font-weight: bold;
+            font-size: 1.1em;
         }
         
         .refresh-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 40px;
+            right: 40px;
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             border: none;
-            border-radius: 50px;
-            padding: 15px 25px;
+            border-radius: 60px;
+            padding: 20px 30px;
             color: white;
             font-weight: bold;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+            z-index: 1000;
         }
         
         .refresh-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.5);
+        }
+        
+        .refresh-btn:active {
+            transform: scale(0.95);
         }
         
         .loading {
             text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            animation: pulse 2s infinite;
+            padding: 60px;
+            font-size: 1.3em;
         }
         
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(78, 205, 196, 0.3);
+            border-radius: 50%;
+            border-top-color: #4ecdc4;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         .footer {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             background: rgba(255, 255, 255, 0.05);
-            margin-top: 50px;
+            margin-top: 60px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
         }
         
         .footer a {
             color: #4ecdc4;
             text-decoration: none;
-            margin: 0 10px;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+            position: relative;
         }
         
         .footer a:hover {
-            text-decoration: underline;
+            color: #ff6b6b;
+            transform: translateY(-2px);
+        }
+        
+        .footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            transition: width 0.3s ease;
+        }
+        
+        .footer a:hover::after {
+            width: 100%;
+        }
+        
+        /* Sound wave animation for live indicator */
+        .sound-wave {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .wave-bar {
+            width: 3px;
+            background: #4ecdc4;
+            border-radius: 2px;
+            animation: wave 1.5s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 15px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 20px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 15px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.3); }
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.2em; }
+            .stats-grid { grid-template-columns: 1fr; padding: 20px; }
+            .opportunities { padding: 0 20px 20px; }
+            .refresh-btn { bottom: 20px; right: 20px; padding: 15px 20px; }
+        }
+        
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
+    
     <div class="header">
         <h1>🚀 DeFi Alpha Hunter</h1>
-        <p>Real-time profit opportunities on Ethereum & Base</p>
-        <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; font-size: 0.9em;">
+        <p class="subtitle">Real-time profit opportunities on Ethereum & Base</p>
+        
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span>LIVE</span>
+            <div class="sound-wave">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; font-size: 0.9em;">
             <strong>⚡ Powered by <a href="https://github.com/edgeandnode/amp" target="_blank" style="color: #4ecdc4; text-decoration: none;">AMP</a></strong> - The Graph's blockchain native database<br>
-            <span style="opacity: 0.8;">Demo showcasing blockchain data analysis capabilities</span>
+            <span style="opacity: 0.8;">Interactive demo showcasing blockchain data analysis capabilities</span>
         </div>
     </div>
     
     <div class="stats-grid" id="stats">
-        <div class="loading">Loading stats...</div>
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <div>Loading stats...</div>
+        </div>
     </div>
     
-    <div class="opportunities" id="opportunities">
-        <div class="loading">Hunting for alpha...</div>
+    <div class="opportunities">
+        <h2 class="section-title">🎯 Alpha Opportunities</h2>
+        <div id="opportunities">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>Hunting for alpha...</div>
+            </div>
+        </div>
     </div>
     
-    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+    <button class="refresh-btn" onclick="refreshData()" title="Refresh Data">
+        🔄 Refresh
+    </button>
+    
+    <div class="notification" id="notification">
+        New opportunities detected! 🚨
+    </div>
     
     <div class="footer">
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 20px;">
             <strong>🔗 Data Sources:</strong>
             <a href="https://github.com/edgeandnode/amp" target="_blank">AMP Database</a> •
             <a href="https://thegraph.com/" target="_blank">The Graph Protocol</a> •
             <a href="https://playground.amp.thegraph.com/" target="_blank">AMP Playground</a>
         </div>
         <div style="font-size: 0.8em; opacity: 0.7;">
-            Blockchain data analysis demo built with AMP<br>
+            Interactive blockchain data analysis demo built with AMP<br>
             Created for hackathon showcase - <a href="https://github.com/PaulieB14/defi-alpha-hunter" target="_blank" style="color: #4ecdc4;">View Source</a>
         </div>
     </div>
@@ -230,12 +528,62 @@
     <script>
         let opportunities = [];
         let stats = {};
+        let lastOpportunityCount = 0;
+        
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                
+                particlesContainer.appendChild(particle);
+                
+                // Remove particle after animation
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 8000);
+            }, 300);
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Add click sound effect (visual feedback)
+        function addClickEffect(element) {
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = '';
+            }, 150);
+        }
         
         async function loadData() {
             try {
                 // Load opportunities
                 const oppResponse = await fetch('/api/opportunities');
-                opportunities = await oppResponse.json();
+                const newOpportunities = await oppResponse.json();
+                
+                // Check for new opportunities
+                if (newOpportunities.length > lastOpportunityCount && lastOpportunityCount > 0) {
+                    showNotification(`${newOpportunities.length - lastOpportunityCount} new opportunities detected! 🚨`);
+                }
+                
+                opportunities = newOpportunities;
+                lastOpportunityCount = opportunities.length;
                 
                 // Load stats  
                 const statsResponse = await fetch('/api/stats');
@@ -245,25 +593,26 @@
                 renderOpportunities();
             } catch (error) {
                 console.error('Error loading data:', error);
+                showNotification('Connection error - retrying... ⚠️');
             }
         }
         
         function renderStats() {
             const statsContainer = document.getElementById('stats');
             statsContainer.innerHTML = `
-                <div class="stat-card">
+                <div class="stat-card" onclick="addClickEffect(this)">
                     <div class="stat-number" style="color: #4ecdc4;">${stats.total_opportunities || 0}</div>
                     <div class="stat-label">Total Opportunities</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="addClickEffect(this)">
                     <div class="stat-number" style="color: #ff6b6b;">${stats.avg_confidence || '0%'}</div>
                     <div class="stat-label">Avg Confidence</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="addClickEffect(this)">
                     <div class="stat-number" style="color: #45b7d1;">$${stats.total_profit || '0'}</div>
                     <div class="stat-label">Est. Profit</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="addClickEffect(this)">
                     <div class="stat-number" style="color: #feca57;">${stats.high_confidence || 0}</div>
                     <div class="stat-label">High Confidence</div>
                 </div>
@@ -274,14 +623,17 @@
             const container = document.getElementById('opportunities');
             
             if (!opportunities.length) {
-                container.innerHTML = '<div class="loading">No opportunities found</div>';
+                container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>No opportunities found</div></div>';
                 return;
             }
             
-            container.innerHTML = opportunities.map(opp => `
-                <div class="opportunity-card">
+            container.innerHTML = opportunities.map((opp, index) => `
+                <div class="opportunity-card" onclick="addClickEffect(this)" style="animation-delay: ${index * 0.1}s">
                     <div class="opp-header">
-                        <div class="opp-type">${getTypeEmoji(opp.type)} ${opp.type.replace(/_/g, ' ')}</div>
+                        <div class="opp-type">
+                            <span class="type-emoji">${getTypeEmoji(opp.type)}</span>
+                            ${opp.type.replace(/_/g, ' ')}
+                        </div>
                         <div class="opp-chain">${opp.chain}</div>
                     </div>
                     
@@ -289,17 +641,17 @@
                         <div class="confidence-fill" style="width: ${opp.confidence * 100}%"></div>
                     </div>
                     
-                    <p style="margin: 15px 0; font-size: 1.1em;">${opp.description}</p>
-                    <p style="color: #4ecdc4; font-weight: bold;">⚡ ${opp.action}</p>
+                    <p style="margin: 20px 0; font-size: 1.1em; line-height: 1.5;">${opp.description}</p>
+                    <p style="color: #4ecdc4; font-weight: bold; font-size: 1.1em;">⚡ ${opp.action}</p>
                     
                     <div class="opp-details">
                         <div class="detail-item">
                             <div class="detail-label">Confidence</div>
-                            <div class="detail-value">${(opp.confidence * 100).toFixed(1)}%</div>
+                            <div class="detail-value" style="color: ${getConfidenceColor(opp.confidence)}">${(opp.confidence * 100).toFixed(1)}%</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Profit Potential</div>
-                            <div class="detail-value">${(opp.profit_potential * 100).toFixed(1)}%</div>
+                            <div class="detail-value" style="color: #4ecdc4;">${(opp.profit_potential * 100).toFixed(1)}%</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Chain</div>
@@ -329,17 +681,74 @@
             return emojis[type] || '💰';
         }
         
+        function getConfidenceColor(confidence) {
+            if (confidence >= 0.8) return '#4ecdc4';
+            if (confidence >= 0.6) return '#feca57';
+            return '#ff6b6b';
+        }
+        
         function refreshData() {
-            document.getElementById('stats').innerHTML = '<div class="loading">Refreshing...</div>';
-            document.getElementById('opportunities').innerHTML = '<div class="loading">Hunting for new alpha...</div>';
+            const refreshBtn = document.querySelector('.refresh-btn');
+            addClickEffect(refreshBtn);
+            
+            document.getElementById('stats').innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Refreshing...</div></div>';
+            document.getElementById('opportunities').innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Hunting for new alpha...</div></div>';
+            
+            showNotification('Refreshing data... 🔄');
             loadData();
         }
         
-        // Auto-refresh every 30 seconds
-        setInterval(loadData, 30000);
+        // Auto-refresh every 30 seconds with notification
+        setInterval(() => {
+            loadData();
+        }, 30000);
         
-        // Initial load
+        // Initialize
+        createParticles();
         loadData();
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                refreshData();
+            }
+        });
+        
+        // Add mouse trail effect
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.1) { // Only create trail 10% of the time
+                const trail = document.createElement('div');
+                trail.style.position = 'fixed';
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                trail.style.width = '4px';
+                trail.style.height = '4px';
+                trail.style.background = 'rgba(78, 205, 196, 0.6)';
+                trail.style.borderRadius = '50%';
+                trail.style.pointerEvents = 'none';
+                trail.style.zIndex = '5';
+                trail.style.animation = 'fadeOut 1s ease-out forwards';
+                
+                document.body.appendChild(trail);
+                
+                setTimeout(() => {
+                    if (trail.parentNode) {
+                        trail.parentNode.removeChild(trail);
+                    }
+                }, 1000);
+            }
+        });
+        
+        // Add fade out animation for mouse trail
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0; transform: scale(0); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
