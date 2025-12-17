@@ -15,7 +15,7 @@ import time
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
-from alpha_hunter import EthBaseAlphaHunter
+from eth_base_alpha_hunter import EthBaseAlphaHunter
 
 class DashboardHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -210,12 +210,34 @@ class DashboardHandler(BaseHTTPRequestHandler):
         .loading {
             animation: pulse 2s infinite;
         }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer a {
+            color: #4ecdc4;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🚀 DeFi Alpha Hunter</h1>
         <p>Real-time profit opportunities on Ethereum & Base</p>
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; font-size: 0.9em;">
+            <strong>⚡ Powered by <a href="https://github.com/edgeandnode/amp" target="_blank" style="color: #4ecdc4; text-decoration: none;">AMP</a></strong> - The Graph's blockchain native database<br>
+            <span style="opacity: 0.8;">Real blockchain data from 33+ datasets • No simulated data</span>
+        </div>
     </div>
     
     <div class="stats-grid" id="stats">
@@ -227,6 +249,19 @@ class DashboardHandler(BaseHTTPRequestHandler):
     </div>
     
     <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+    
+    <div class="footer">
+        <div style="margin-bottom: 15px;">
+            <strong>🔗 Data Sources:</strong>
+            <a href="https://github.com/edgeandnode/amp" target="_blank">AMP Database</a> •
+            <a href="https://thegraph.com/" target="_blank">The Graph Protocol</a> •
+            <a href="https://playground.amp.thegraph.com/" target="_blank">AMP Playground</a>
+        </div>
+        <div style="font-size: 0.8em; opacity: 0.7;">
+            Real blockchain data from Ethereum, Base, Uniswap, Aave, and more<br>
+            Built with AMP - The blockchain native database by Edge & Node
+        </div>
+    </div>
     
     <script>
         let opportunities = [];
