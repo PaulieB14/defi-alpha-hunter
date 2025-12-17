@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/opportunities.py": {
-      "runtime": "python3.9"
+      "runtime": "python3.12"
     },
     "api/stats.py": {
-      "runtime": "python3.9"
+      "runtime": "python3.12"
     }
   },
   "rewrites": [
