@@ -1,0 +1,435 @@
+#!/usr/bin/env python3
+"""
+🌐 DeFi Alpha Hunter Web Dashboard
+Beautiful web interface for real-time DeFi opportunities
+"""
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+import urllib.parse
+from datetime import datetime
+import threading
+import time
+
+# Import our alpha hunter
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+from alpha_hunter import EthBaseAlphaHunter
+
+class DashboardHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.serve_dashboard()
+        elif self.path == '/api/opportunities':
+            self.serve_opportunities()
+        elif self.path == '/api/stats':
+            self.serve_stats()
+        else:
+            self.send_error(404)
+    
+    def serve_dashboard(self):
+        """Serve the main dashboard HTML"""
+        html = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 DeFi Alpha Hunter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+        
+        .opportunities {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px 30px;
+        }
+        
+        .opportunity-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .opportunity-card:hover {
+            transform: translateX(10px);
+            border-color: #4ecdc4;
+        }
+        
+        .opp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .opp-type {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .opp-chain {
+            background: rgba(78, 205, 196, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .opp-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 DeFi Alpha Hunter</h1>
+        <p>Real-time profit opportunities on Ethereum & Base</p>
+    </div>
+    
+    <div class="stats-grid" id="stats">
+        <div class="loading">Loading stats...</div>
+    </div>
+    
+    <div class="opportunities" id="opportunities">
+        <div class="loading">Hunting for alpha...</div>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+    
+    <script>
+        let opportunities = [];
+        let stats = {};
+        
+        async function loadData() {
+            try {
+                // Load opportunities
+                const oppResponse = await fetch('/api/opportunities');
+                opportunities = await oppResponse.json();
+                
+                // Load stats  
+                const statsResponse = await fetch('/api/stats');
+                stats = await statsResponse.json();
+                
+                renderStats();
+                renderOpportunities();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        function renderStats() {
+            const statsContainer = document.getElementById('stats');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #4ecdc4;">${stats.total_opportunities || 0}</div>
+                    <div class="stat-label">Total Opportunities</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #ff6b6b;">${stats.avg_confidence || '0%'}</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #45b7d1;">$${stats.total_profit || '0'}</div>
+                    <div class="stat-label">Est. Profit</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #feca57;">${stats.high_confidence || 0}</div>
+                    <div class="stat-label">High Confidence</div>
+                </div>
+            `;
+        }
+        
+        function renderOpportunities() {
+            const container = document.getElementById('opportunities');
+            
+            if (!opportunities.length) {
+                container.innerHTML = '<div class="loading">No opportunities found</div>';
+                return;
+            }
+            
+            container.innerHTML = opportunities.map(opp => `
+                <div class="opportunity-card">
+                    <div class="opp-header">
+                        <div class="opp-type">${getTypeEmoji(opp.type)} ${opp.type.replace(/_/g, ' ')}</div>
+                        <div class="opp-chain">${opp.chain}</div>
+                    </div>
+                    
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${opp.confidence * 100}%"></div>
+                    </div>
+                    
+                    <p style="margin: 15px 0; font-size: 1.1em;">${opp.description}</p>
+                    <p style="color: #4ecdc4; font-weight: bold;">⚡ ${opp.action}</p>
+                    
+                    <div class="opp-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Confidence</div>
+                            <div class="detail-value">${(opp.confidence * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Profit Potential</div>
+                            <div class="detail-value">${(opp.profit_potential * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Chain</div>
+                            <div class="detail-value">${opp.chain}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Time</div>
+                            <div class="detail-value">${new Date(opp.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getTypeEmoji(type) {
+            const emojis = {
+                'CROSS_CHAIN_ARBITRAGE': '🌉',
+                'BASE_WHALE_SIGNAL': '🐋',
+                'ETH_LIQUIDATION_CASCADE': '⚡',
+                'BASE_ECOSYSTEM_PLAY': '🔵',
+                'LOW_GAS_OPPORTUNITY': '⛽',
+                'HIGH_GAS_MIGRATION': '⛽',
+                'TOKEN_LAUNCH_SNIPE': '🎯',
+                'LIQUIDATION_MEV': '⚡',
+                'PATTERN_DETECTION': '📊'
+            };
+            return emojis[type] || '💰';
+        }
+        
+        function refreshData() {
+            document.getElementById('stats').innerHTML = '<div class="loading">Refreshing...</div>';
+            document.getElementById('opportunities').innerHTML = '<div class="loading">Hunting for new alpha...</div>';
+            loadData();
+        }
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
+        
+        // Initial load
+        loadData();
+    </script>
+</body>
+</html>
+        """
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(html.encode())
+    
+    def serve_opportunities(self):
+        """Serve opportunities as JSON"""
+        try:
+            hunter = EthBaseAlphaHunter()
+            opportunities = hunter.run_focused_hunt()
+            
+            # Convert to JSON-serializable format
+            json_opportunities = []
+            for opp in opportunities:
+                json_opportunities.append({
+                    'type': opp.type,
+                    'chain': opp.chain,
+                    'confidence': opp.confidence,
+                    'profit_potential': opp.profit_potential,
+                    'description': opp.description,
+                    'action': opp.action,
+                    'timestamp': opp.timestamp.isoformat(),
+                    'data': opp.data
+                })
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(json_opportunities).encode())
+            
+        except Exception as e:
+            self.send_error(500, str(e))
+    
+    def serve_stats(self):
+        """Serve summary stats as JSON"""
+        try:
+            hunter = EthBaseAlphaHunter()
+            opportunities = hunter.run_focused_hunt()
+            
+            if opportunities:
+                avg_confidence = sum(o.confidence for o in opportunities) / len(opportunities)
+                total_profit = sum(o.profit_potential * 100000 for o in opportunities)  # Assume $100k position
+                high_confidence = len([o for o in opportunities if o.confidence > 0.8])
+                
+                stats = {
+                    'total_opportunities': len(opportunities),
+                    'avg_confidence': f"{avg_confidence:.1%}",
+                    'total_profit': f"{total_profit:,.0f}",
+                    'high_confidence': high_confidence,
+                    'last_updated': datetime.now().isoformat()
+                }
+            else:
+                stats = {
+                    'total_opportunities': 0,
+                    'avg_confidence': '0%',
+                    'total_profit': '0',
+                    'high_confidence': 0,
+                    'last_updated': datetime.now().isoformat()
+                }
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(stats).encode())
+            
+        except Exception as e:
+            self.send_error(500, str(e))
+
+def run_dashboard(port=8080):
+    """Run the web dashboard"""
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, DashboardHandler)
+    
+    print(f"🌐 DeFi Alpha Hunter Dashboard running at:")
+    print(f"   http://localhost:{port}")
+    print(f"   Press Ctrl+C to stop")
+    
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\n🛑 Dashboard stopped")
+        httpd.server_close()
+
+if __name__ == "__main__":
+    run_dashboard()
