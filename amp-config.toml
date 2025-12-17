@@ -1,0 +1,8 @@
+# AMP Configuration
+metadata_db_url = "postgresql://$(whoami)@localhost:5432/amp"
+data_dir = "/tmp/amp-data"
+providers_dir = "/tmp/amp-providers"
+
+[server]
+jsonl_port = 1603
+admin_port = 1610
